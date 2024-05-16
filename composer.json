@@ -1,5 +1,5 @@
 {
-  "name": "elnooronline/laravel-notifications",
+  "name": "abdallahmohammed/laravel-notifications",
   "description": "Imagine having an minimal abstract layer for sending notifications instead of Laravel's",
   "type": "library",
   "license": "MIT",
