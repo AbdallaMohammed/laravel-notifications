@@ -2,7 +2,7 @@
 
 namespace Elnooronline\Notifications\Providers;
 
-use AhmedAliraqi\LaravelMediaUploader\Console\DeleteExpiredFcmTokensCommand;
+use Elnooronline\Notifications\Console\DeleteExpiredFcmTokensCommand;
 use Illuminate\Support\ServiceProvider;
 
 class NotificationsServiceProvider extends ServiceProvider

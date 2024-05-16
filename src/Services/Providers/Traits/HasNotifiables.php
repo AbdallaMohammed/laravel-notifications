@@ -28,7 +28,7 @@ trait HasNotifiables
     /**
      * @return array
      */
-    public function getNotifiables()
+    public function getNotifiables(): array
     {
         return $this->notifiables;
     }

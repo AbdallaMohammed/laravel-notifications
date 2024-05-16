@@ -2,9 +2,11 @@
 
 namespace Elnooronline\Notifications\Tests\Feature;
 
+use Elnooronline\Notifications\Services\Providers\Notifications\FirebaseNotification;
 use Elnooronline\Notifications\Support\Notifications;
 use Elnooronline\Notifications\Tests\Model\User;
 use Elnooronline\Notifications\Tests\TestCase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
 class FirebaseProviderFeatureTest extends TestCase
@@ -15,7 +17,11 @@ class FirebaseProviderFeatureTest extends TestCase
 
         Notification::assertNothingSent();
 
-        $model = new User();
+        $model = User::forceCreate([
+            'name' => 'Hello',
+            'email' => 'admin@demo.com',
+            'password' => Hash::make('password'),
+        ]);
 
         $notification = Notifications::make();
 
@@ -23,13 +29,14 @@ class FirebaseProviderFeatureTest extends TestCase
             ->provider('firebase')
             ->title('Firebase !')
             ->body('A firebase notification sample')
-            ->notifiable($model)
-            ->syncQueue();
+            ->notifiable($model);
+
+        $instance->syncQueue();
 
         $chain = $notification->toChain();
 
         $chain->sendAll();
 
-        // Notification::assertSentTo($model, $instance);
+        Notification::assertSentTo($model, FirebaseNotification::class);
     }
 }

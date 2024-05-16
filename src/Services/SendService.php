@@ -2,12 +2,13 @@
 
 namespace Elnooronline\Notifications\Services;
 
-use Elnooronline\Notifications\Services\Providers\Provider;
+use Elnooronline\Notifications\Services\Interfaces\NotificationProvider;
+use Elnooronline\Notifications\Services\Providers\Notifications\FirebaseNotification;
 use Illuminate\Support\Facades\Notification;
 
 class SendService
 {
-    private Provider $provider;
+    private NotificationProvider $provider;
 
     /**
      * Send notification.
@@ -18,15 +19,15 @@ class SendService
     {
         Notification::send(
             $this->provider->getNotifiables(),
-            $this->provider->toNotification()
+            new FirebaseNotification($this->provider)
         );
     }
 
     /**
-     * @param Provider $provider
+     * @param NotificationProvider $provider
      * @return $this
      */
-    public function setProvider(Provider $provider)
+    public function setProvider(NotificationProvider $provider)
     {
         $this->provider = $provider;
 

@@ -3,6 +3,7 @@
 namespace Elnooronline\Notifications\Services;
 
 use Elnooronline\Notifications\Services\Enums\QueueEnum;
+use Illuminate\Support\Arr;
 
 class ProviderConfig
 {
@@ -48,6 +49,24 @@ class ProviderConfig
         $this->toQueue(QueueEnum::DATABASE);
 
         return $this;
+    }
+
+    /**
+     * Determine whether config has key.
+     *
+     * @return boolean
+     */
+    public function has($key)
+    {
+        return Arr::has($this->config, $key);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function get($key, $default = null)
+    {
+        return Arr::get($this->config, $key, $default);
     }
 
     /**

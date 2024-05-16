@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 class ChainService
 {
     /**
-     * @var SendService[]
+     * @var Collection
      */
     private Collection $chain;
 
@@ -39,8 +39,8 @@ class ChainService
             return $this;
         }
 
-        foreach ($this->chain->toArray() as $interface) {
-            $interface->send();
+        foreach ($this->chain->toArray() as $instance) {
+            $instance->send();
         }
 
         return $this;
@@ -89,6 +89,6 @@ class ChainService
     private function setChain(array $chain)
     {
         $this->chain = collect($chain)
-            ->filter(fn ($interface) => $interface instanceof SendService);
+            ->filter(fn ($instance) => $instance instanceof SendService);
     }
 }

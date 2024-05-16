@@ -4,14 +4,16 @@ namespace Elnooronline\Notifications\Services\Providers;
 
 use Elnooronline\Notifications\Services\Providers\Traits\HasNotifiables;
 use Elnooronline\Notifications\Services\Exceptions\InvalidMethodException;
+use Elnooronline\Notifications\Services\Interfaces\NotificationProvider;
 use Elnooronline\Notifications\Services\ProviderConfig;
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
+use Elnooronline\Notifications\Services\Providers\Notifications\BaseNotification;
+use Illuminate\Support\Arr;
 
-abstract class Provider extends Notification
+abstract class Provider implements NotificationProvider
 {
     use HasNotifiables;
-    use Queueable;
+
+    protected $notification;
 
     /**
      * @var array
@@ -33,14 +35,13 @@ abstract class Provider extends Notification
         $this->config = $config;
     }
 
-    abstract public function channel();
-
     /**
      * @return mixed
      */
-    public function via()
+    public function get($key, $default = null)
     {
-        return $this->channel();
+        // TODO: convert to BagClass
+        return Arr::get($this->toArray(), $key, $default);
     }
 
     /**
@@ -57,23 +58,20 @@ abstract class Provider extends Notification
     /**
      * @return array
      */
-    protected function getConfig(): array
+    protected function getConfig(): ProviderConfig
     {
-        return $this->config->toArray();
+        return $this->config;
     }
 
-    /**
-     * @return $this
-     */
-    public function toNotification()
+    public function toNotification(): BaseNotification
     {
-        $config = $this->getConfig();
-
-        if ($config['queue']) {
-            $this->onQueue($config['queue']);
+        if (! $this->notification || ! class_exists($this->notification)) {
+            throw new \Exception('Cannot invoke notification without assign it');
         }
 
-        return $this;
+        $class = $this->notification;
+
+        return new $class($this);
     }
 
     /**

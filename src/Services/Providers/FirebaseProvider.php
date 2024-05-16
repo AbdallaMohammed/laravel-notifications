@@ -2,16 +2,16 @@
 
 namespace Elnooronline\Notifications\Services\Providers;
 
-use Elnooronline\Notifications\Services\Interfaces\NotificationProvider;
 use Elnooronline\Notifications\Services\ProviderConfig;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Elnooronline\Notifications\Services\Providers\Notifications\FirebaseNotification;
+use Elnooronline\Notifications\Services\Providers\Traits\HasMagicCall;
 use Illuminate\Support\Arr;
-use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
-use NotificationChannels\Fcm\Resources\Notification as FcmNotification;
 
-class FirebaseProvider extends Provider implements NotificationProvider, ShouldQueue
+class FirebaseProvider extends Provider
 {
+    use HasMagicCall;
+
     /**
      * @var string
      */
@@ -28,16 +28,11 @@ class FirebaseProvider extends Provider implements NotificationProvider, ShouldQ
     private string $image = '';
 
     /**
-     * @var array
+     * @var FcmMessage
      */
-    private array $fcmData = [];
-
-    /**
-     * @var array
-     */
-    private array $fcmCustom = [];
-
     private FcmMessage $fcmMessage;
+
+    protected $notification = FirebaseNotification::class;
 
     /**
      * @param ProviderConfig|null $config
@@ -47,14 +42,6 @@ class FirebaseProvider extends Provider implements NotificationProvider, ShouldQ
         parent::__construct($config);
 
         $this->fcmMessage = new FcmMessage();
-    }
-
-    /**
-     * @return string
-     */
-    public function channel()
-    {
-        return FcmChannel::class;
     }
 
     /**
@@ -101,7 +88,7 @@ class FirebaseProvider extends Provider implements NotificationProvider, ShouldQ
      *
      * @return array
      */
-    public function getData(): array
+    public function toArray(): array
     {
         $data = Arr::except($this->data, ['config']);
 
@@ -109,41 +96,7 @@ class FirebaseProvider extends Provider implements NotificationProvider, ShouldQ
             'title' => $this->title,
             'body' => $this->body,
             'image' => $this->image,
-            'data' => $this->fcmData,
-            'custom' => $this->fcmCustom,
+            'fcmMessage' => $this->fcmMessage,
         ], $data);
-    }
-
-    /**
-     * @return FcmMessage
-     * @throws \NotificationChannels\Fcm\Exceptions\CouldNotSendNotification
-     */
-    public function toFcm()
-    {
-        return $this->fcmMessage->setNotification(
-            (new FcmNotification())
-                ->setTitle($this->title)
-                ->setImage($this->image)
-                ->setBody($this->body)
-        );
-    }
-
-    /**
-     * @param string $method
-     * @param array $args
-     * @return mixed
-     * @throws \Elnooronline\Notifications\Services\Exceptions\InvalidMethodException
-     */
-    public function __call(string $method, array $args)
-    {
-        if (method_exists($this, $method)) {
-            return $this->{$method}(...$args);
-        }
-
-        if (method_exists($this->fcmMessage, $method)) {
-            return $this->fcmMessage->{$method}(...$args);
-        }
-
-        return parent::__call($method, $args);
     }
 }

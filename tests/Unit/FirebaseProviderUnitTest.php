@@ -13,10 +13,9 @@ class FirebaseProviderUnitTest extends TestCase
 
         $result = Notifications::make()
             ->provider('firebase')
-            ->title($title)
-            ->getData();
+            ->title($title);
 
-        $this->assertEquals($result['title'], $title);
+        $this->assertEquals($result->get('title'), $title);
     }
 
     public function testSetBody()
@@ -25,10 +24,9 @@ class FirebaseProviderUnitTest extends TestCase
 
         $result = Notifications::make()
             ->provider('firebase')
-            ->body($body)
-            ->getData();
+            ->body($body);
 
-        $this->assertEquals($result['body'], $body);
+        $this->assertEquals($result->get('body'), $body);
     }
 
     public function testSetImage()
@@ -37,9 +35,8 @@ class FirebaseProviderUnitTest extends TestCase
 
         $result = Notifications::make()
             ->provider('firebase')
-            ->image($image)
-            ->getData();
+            ->image($image);
 
-        $this->assertEquals($result['image'], $image);
+        $this->assertEquals($result->get('image'), $image);
     }
 }

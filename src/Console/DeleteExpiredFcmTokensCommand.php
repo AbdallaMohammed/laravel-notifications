@@ -1,6 +1,6 @@
 <?php
 
-namespace AhmedAliraqi\LaravelMediaUploader\Console;
+namespace Elnooronline\Notifications\Console;
 
 use Elnooronline\Notifications\Entities\FcmToken;
 use Illuminate\Console\Command;
